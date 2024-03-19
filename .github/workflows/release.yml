@@ -5,14 +5,14 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'The version to use. In the form v1.2.3-alpha+buildinfo.'
+        description: "The version to use. In the form v1.2.3-alpha+buildinfo."
         required: true
       tag-prefix:
-        description: 'The prefix to use for tags.'
+        description: "The prefix to use for tags."
         required: false
-        default: ${{ vars.LINKERD2_PROXY_RELEASE_PREFIX || 'release/' }}
+        default: "release/"
       dry-run:
-        description: 'Controls publication.'
+        description: "Controls publication."
         required: false
         default: true
 
@@ -24,7 +24,7 @@ env:
   RUSTUP_MAX_RETRIES: 10
 
 concurrency:
-  group:  ${{ github.workflow }}-${{ github.head_ref }}
+  group: ${{ github.workflow }}-${{ github.head_ref }}
   cancel-in-progress: true
 
 jobs:
