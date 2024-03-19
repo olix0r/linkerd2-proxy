@@ -125,7 +125,7 @@ jobs:
       TAG: "${{ inputs.tag-prefix }}v${{ needs.meta.outputs.version }}"
     steps:
       # Tag the release.
-      - uses: actions/checkout@9bb56186c3b09b4f86b1c6q5136769dd318469633
+      - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - run: git tag -a -m "v${{ needs.meta.outputs.version }}" "$TAG"
       # Fetch the artifacts.
       - uses: actions/download-artifact@c850b930e6ba138125429b7e5c93fc707a7f8427
