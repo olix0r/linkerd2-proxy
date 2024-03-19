@@ -109,11 +109,15 @@ jobs:
       LINKERD2_PROXY_VENDOR: ${{ github.repository_owner }}
       LINKERD2_PROXY_VERSION: ${{ needs.meta.outputs.version }}
     steps:
+      - name: Configure git
+        run: |
+          git config --global --add safe.directory "$PWD" # actions/runner#2033
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
       - uses: actions/checkout@9bb56186c3b09b4f86b1c65136769dd318469633
       - uses: Swatinem/rust-cache@23bce251a8cd2ffc3c1075eaa2367cf899916d84
         with:
-          key: profile-${{ inputs.profile }}-${{ matrix.arch }}-${{ matrix.libc }}
-      - run: git config --global --add safe.directory "$PWD" # actions/runner#2033
+          key: ${{ matrix.libc }}
       - run: just fetch
       - run: just arch=${{ matrix.arch }} libc=${{ matrix.libc }} rustup
       - run: just arch=${{ matrix.arch }} libc=${{ matrix.libc }} profile=${{ inputs.profile }} build
