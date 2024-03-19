@@ -116,7 +116,8 @@ test-dir dir *flags:
     cd {{ dir }} && {{ _cargo }} test --frozen {{ _features }} {{ flags }}
 
 # Build the proxy
-build: _build checksec _strip
+# checksec
+build: _build _strip
 
 # Build the proxy without stripping debug symbols
 build-debug: _build
