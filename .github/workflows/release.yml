@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version in the form v1.2.3-alpha+buildinfo."
+        description: "Version in the form v1.2.3-prerelease+buildinfo."
         required: true
       tag-prefix:
         description: "Tag prefix"
