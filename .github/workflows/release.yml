@@ -11,14 +11,14 @@ on:
         description: "Tag prefix"
         required: false
         default: "release/"
-      dry-run:
-        description: "Dry-run"
-        required: false
-        default: true
       profile:
         description: "Build profile: debug or release."
         required: false
         default: "release"
+      publish:
+        description: "Publish the release?"
+        required: false
+        default: false
 
 env:
   CARGO_INCREMENTAL: 0
@@ -46,7 +46,6 @@ jobs:
           set -euo pipefail
           shopt -s extglob
           if [[ '${{ github.event_name }}' == "pull_request" ]]; then
-            echo dry-run=true
             echo version="0.0.0-test.${SHA:0:7}"
             echo archs='["amd64"]'
             exit 0
@@ -55,8 +54,7 @@ jobs:
             echo "Invalid version" >&2
             exit 1
           fi
-          ( echo dry-run=${{ inputs.dry-run != 'false' }}
-            echo version="${VERSION#v}"
+          ( echo version="${VERSION#v}"
             echo archs='["amd64", "arm64", "arm"]'
           ) >> "$GITHUB_OUTPUT"
 
@@ -75,7 +73,6 @@ jobs:
       archs: ${{ steps.meta.outputs.archs }}
       version: ${{ steps.meta.outputs.version }}
       package: ${{ github.event_name == 'workflow_dispatch' || steps.changed.outputs.any_changed == 'true' }}
-      publish: ${{ steps.meta.outputs.dry-run == 'false' }}
 
   info:
     needs: meta
@@ -85,10 +82,13 @@ jobs:
       - name: Info
         run: |
           echo 'github.repository_owner: ${{ github.repository_owner }}'
+          echo 'inputs.version: ${{ inputs.version }}'
+          echo 'inputs.tag-prefix: ${{ inputs.tag-prefix }}'
+          echo 'inputs.profile: ${{ inputs.profile }}'
+          echo 'inputs.publish: ${{ inputs.publish }}'
           echo 'needs.meta.outputs.archs: ${{ needs.meta.outputs.archs }}'
           echo 'needs.meta.outputs.version: ${{ needs.meta.outputs.version }}'
           echo 'needs.meta.outputs.package: ${{ needs.meta.outputs.package }}'
-          echo 'needs.meta.outputs.publish: ${{ needs.meta.outputs.publish }}'
 
   package:
     needs: meta
@@ -101,7 +101,7 @@ jobs:
 
     # If we're not actually building on a release tag, don't short-circuit on
     # errors. This helps us know whether a failure is platform-specific.
-    continue-on-error: ${{ needs.meta.outputs.publish != 'true' }}
+    continue-on-error: ${{ inputs.publish != 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 40
     container: docker://ghcr.io/linkerd/dev:v43-rust-musl
@@ -147,9 +147,9 @@ jobs:
           path: artifacts
       - run: du -h artifacts/**/*
       # Publish the release.
-      - if: needs.meta.outputs.publish == 'true'
+      - if: inputs.publish == 'true'
         run: git push origin "$TAG"
-      - if: needs.meta.outputs.publish == 'true'
+      - if: inputs.publish == 'true'
         uses: softprops/action-gh-release@9d7c94cfd0a1f3ed45544c887983e9fa900f0564
         with:
           name: v${{ needs.meta.outputs.version }}
