@@ -5,14 +5,14 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "The version to use. In the form v1.2.3-alpha+buildinfo."
+        description: "Version in the form v1.2.3-alpha+buildinfo."
         required: true
       tag-prefix:
-        description: "The prefix to use for tags."
+        description: "Tag prefix"
         required: false
         default: "release/"
       dry-run:
-        description: "Controls publication."
+        description: "Dry-run"
         required: false
         default: true
 
