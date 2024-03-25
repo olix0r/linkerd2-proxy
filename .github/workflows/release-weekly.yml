@@ -12,11 +12,11 @@ concurrency:
 
 jobs:
   last-release:
-    if: github.repository == 'linkerd/linkerd2-proxy' # Don't run this in forks.
+    #if: github.repository == 'linkerd/linkerd2-proxy' # Don't run this in forks.
     runs-on: ubuntu-22.04
     timeout-minutes: 5
     env:
-      GH_REPO: ${{ github.repository }}
+      GH_REPO: "linkerd/linkerd2-proxy"
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: Latest release
